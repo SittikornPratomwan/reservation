@@ -1,45 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบจองคิว</title>
+  <meta charset="UTF-8">
+  <title>จองคิว</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      max-width: 480px;
+      margin: auto;
+      background-color: #f9f9f9;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
-    <h1>ระบบจองคิว</h1>
-    <form id="reservationForm">
-        <label for="name">ชื่อ:</label><br>
-        <input type="text" id="name" name="name" required><br><br>
+  <h2>แบบฟอร์มจองคิว</h2>
+  <form id="bookingForm">
+    <label>จำนวนคน</label>
+    <input type="number" name="numberOfPeople" required min="1">
 
-        <label for="date">วันที่:</label><br>
-        <input type="date" id="date" name="date" required><br><br>
+    <label>ชื่อโต๊ะ</label>
+    <input type="text" name="tableName" required>
 
-        <button type="button" onclick="submitForm()">ยืนยันการจอง</button>
-    </form>
+    <label>เวลาที่จอง</label>
+    <input type="time" name="bookingTime" required>
 
-    <script>
-        function submitForm() {
-            const name = document.getElementById('name').value;
-            const date = document.getElementById('date').value;
+    <button type="submit">จองคิว</button>
+  </form>
 
-            if (name && date) {
-                fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, date })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.message);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
-                });
-            } else {
-                alert('กรุณากรอกข้อมูลให้ครบถ้วน');
-            }
+  <script>
+    const form = document.getElementById("bookingForm");
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const data = {
+        numberOfPeople: form.numberOfPeople.value,
+        tableName: form.tableName.value,
+        bookingTime: form.bookingTime.value
+      };
+
+      fetch("YOUR_WEB_APP_URL", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json"
         }
-    </script>
+      })
+      .then(res => res.text())
+      .then(response => {
+        alert("จองคิวเรียบร้อยแล้ว!");
+        form.reset();
+      })
+      .catch(error => {
+        alert("เกิดข้อผิดพลาด: " + error.message);
+      });
+    });
+  </script>
 </body>
 </html>
