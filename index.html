@@ -1,89 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>จองคิว</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>จองคิว</title>
   <style>
     body {
       font-family: sans-serif;
-      padding: 20px;
+      padding: 1rem;
       max-width: 480px;
       margin: auto;
-      background-color: #f9f9f9;
     }
-
-    h2 {
-      text-align: center;
-      color: #333;
-    }
-
-    label {
-      display: block;
-      margin: 12px 0 6px;
-    }
-
-    input, select, button {
+    input, button {
       width: 100%;
       padding: 10px;
-      font-size: 16px;
-      margin-bottom: 12px;
-      border-radius: 6px;
+      margin: 8px 0;
+      border-radius: 8px;
       border: 1px solid #ccc;
     }
-
     button {
-      background-color: #007BFF;
+      background-color: #4CAF50;
       color: white;
       border: none;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
-  <h2>แบบฟอร์มจองคิว</h2>
+  <h2>จองคิว</h2>
   <form id="bookingForm">
-    <label>จำนวนคน</label>
-    <input type="number" name="numberOfPeople" required min="1">
+    <label>จำนวนคน:</label>
+    <input type="number" name="peopleCount" required min="1">
 
-    <label>ชื่อโต๊ะ</label>
+    <label>ชื่อโต๊ะ:</label>
     <input type="text" name="tableName" required>
 
-    <label>เวลาที่จอง</label>
-    <input type="time" name="bookingTime" required>
+    <label>เวลาที่จอง:</label>
+    <input type="datetime-local" name="bookingTime" required>
 
-    <button type="submit">จองคิว</button>
+    <button type="submit">บันทึก</button>
   </form>
 
-  <script>
-    const form = document.getElementById("bookingForm");
-    form.addEventListener("submit", function(e) {
-      e.preventDefault();
+  <p id="status"></p>
 
+  <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyWCvJPIcZRF_YHck5yAEd7amVlF31NzKrhVwGFofw_WYXwEZMCsh47tj4a-DnEDJY/exec'; // ใส่ URL Web App ที่ได้จากขั้นตอนที่ 3
+
+    document.getElementById('bookingForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
       const data = {
-        numberOfPeople: form.numberOfPeople.value,
-        tableName: form.tableName.value,
-        bookingTime: form.bookingTime.value
+        peopleCount: formData.get('peopleCount'),
+        tableName: formData.get('tableName'),
+        bookingTime: formData.get('bookingTime')
       };
 
-      fetch("https://script.google.com/macros/s/AKfycbzb-ClmwXCSQl4YCdZRgfgDAGmVJZmD3bCeYUW2CvHvuPPaLHGQ3bagpF6rblp4UFI/exec", {
-        method: "POST",
+      fetch(scriptURL, {
+        method: 'POST',
         body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json"
-        }
+        headers: { 'Content-Type': 'application/json' }
       })
-      .then(res => res.text())
       .then(response => {
-        alert("จองคิวเรียบร้อยแล้ว!");
-        form.reset();
+        document.getElementById('status').textContent = '✅ บันทึกสำเร็จ!';
+        document.getElementById('bookingForm').reset();
       })
       .catch(error => {
-        alert("เกิดข้อผิดพลาด: " + error.message);
+        document.getElementById('status').textContent = '❌ เกิดข้อผิดพลาดในการบันทึก';
       });
     });
   </script>
